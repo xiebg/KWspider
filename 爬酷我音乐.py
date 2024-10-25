@@ -4,6 +4,7 @@ import requests
 import os
 import random
 import string
+import re
 #pn页码   rn=30每页30首   reqId歌曲id
 headers ={
     "Referer": "http://www.kuwo.cn/rankList",
@@ -14,7 +15,10 @@ headers ={
 
 }
 # counter = 1
-
+# 剔除非unicode字符
+def replace_non_unicode(string):
+    pattern = re.compile(r'[^\u4e00-\u9fa5\u0030-\u0039\u0041-\u005a\u0061-\u007a]')
+    return pattern.sub(lambda x: ' ', string)
 
 def generate_random_string(length=16):
     """生成一个指定长度的随机字符串，包含大小写字母和数字。"""
@@ -29,7 +33,8 @@ def replace_non_gbk_chars(input_str):
     except UnicodeEncodeError:
         # 如果出现编码错误，说明字符串中包含无法用GBK编码的字符
         # 生成一个随机的16位字符字符串来替代
-        return generate_random_string(16)
+        return replace_non_unicode(input_str)
+
 def get_list(num,word):
     url = f"https://bd.kuwo.cn/search/searchMusicBykeyWord?vipver=1&client=kt&ft=music&cluster=0&strategy=2012&encoding=utf8&rformat=json&mobi=1&issubtitle=1&show_copyright_off=1&pn={num}&rn=20&all={word}"
     resp = requests.get(url,headers = headers).json()
@@ -110,24 +115,24 @@ def save_txt(title,url,state="正常"):
         print("=====================")
 def save_date(title,url):
     headers={
-"authority": "rn01-sycdn.kuwo.cn",
-"method": "GET",
-"path": url,
-"scheme": "https",
-"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-"accept-encoding": "gzip, deflate, br",
-"accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
-"cache-control": "no-cache",
-"cookie": "_ga=GA1.2.340260792.1623853001; _gid=GA1.2.1623149410.1623853001; Hm_lvt_cdb524f42f0ce19b169a8071123a4797=1623853001,1623931172; Hm_lpvt_cdb524f42f0ce19b169a8071123a4797=1623931172",
-"pragma": "no-cache",
-"sec-ch-ua": "\" Not;A Brand\";v=\"99\", \"Microsoft Edge\";v=\"91\", \"Chromium\";v=\"91\"",
-"sec-ch-ua-mobile": "?0",
-"sec-fetch-dest": "document",
-"sec-fetch-mode": "navigate",
-"sec-fetch-site": "none",
-"sec-fetch-user": "?1",
-"upgrade-insecure-requests": "1",
-"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36 Edg/91.0.864.48"
+        "authority": "rn01-sycdn.kuwo.cn",
+        "method": "GET",
+        "path": url,
+        "scheme": "https",
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+        "accept-encoding": "gzip, deflate, br",
+        "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+        "cache-control": "no-cache",
+        "cookie": "_ga=GA1.2.340260792.1623853001; _gid=GA1.2.1623149410.1623853001; Hm_lvt_cdb524f42f0ce19b169a8071123a4797=1623853001,1623931172; Hm_lpvt_cdb524f42f0ce19b169a8071123a4797=1623931172",
+        "pragma": "no-cache",
+        "sec-ch-ua": "\" Not;A Brand\";v=\"99\", \"Microsoft Edge\";v=\"91\", \"Chromium\";v=\"91\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "none",
+        "sec-fetch-user": "?1",
+        "upgrade-insecure-requests": "1",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36 Edg/91.0.864.48"
 }
     path = "歌曲/" +word
     if os.path.exists(path) == False:
